@@ -1,4 +1,6 @@
-#Dmitriy Smirnov
+# Burning Flame simulation and Tetris-like game
+# BBC Micro:bit
+# Dmitriy Smirnov, 2019
 from microbit import display, button_a, button_b, sleep
 import random
 
@@ -39,10 +41,7 @@ class Particle:
 
 def fire():
     particles = [ Particle( 0, 0 ), Particle( 1, 0 ), Particle( 2, 0 ), Particle( 3, 0 ), Particle( 4, 0 ),
- #             Particle( 0, 1 ), Particle( 1, 1 ), Particle( 2, 1 ), Particle( 3, 1 ), Particle( 4, 1 ),
-              Particle( 0, 2 ), Particle( 1, 2 ), Particle( 2, 2 ), Particle( 3, 2 ), Particle( 4, 2 ) ] 
- #             Particle( 0, 3 ), Particle( 1, 3 ), Particle( 2, 3 ), Particle( 3, 3 ), Particle( 4, 3 ),
- #             Particle( 0, 4 ), Particle( 1, 4 ), Particle( 2, 4 ), Particle( 3, 4 ), Particle( 4, 4 ) ]
+                  Particle( 0, 2 ), Particle( 1, 2 ), Particle( 2, 2 ), Particle( 3, 2 ), Particle( 4, 2 ) ] 
 
 
     display.clear()
@@ -59,14 +58,31 @@ def fire():
 
 
 def compact( rows ):
-    result = [];
-    for row in rows:
-        cnt = len( row )
-        if 0 == row.count( get_empty_value() ):
-            result.insert( get_empty_value(), [ 0 for i in range( cnt ) ] )
-        else:
-            result.append( row )
+    compacted = False
+    stp = 2
+    for step in range( 1, 8, stp ):
+        result = [];
+        for row in rows:
+            cnt = len( row )
+            if 0 == row.count( get_empty_value() ):
+                compacted = True
+                for i in range( 0, cnt ):
+                    row[ i ] -= stp
+                    if row[ i ] < get_empty_value():
+                        row[ i ] = get_empty_value()
+                if cnt == row.count( get_empty_value() ):
+                    result.insert( 0, row )
+                else:
+                    result.append( row )
+            else:
+                result.append( row )
+            
+        if not compacted:
+            break;
+        draw( result )
+        sleep( 40 )
     return result
+
 
 def get_empty_value():
     return 0
@@ -113,12 +129,12 @@ def merge( rows, fugure, x0, y0, empty = True ):
 
 def fade():
     l1 = [ [ 9, 9, 9, 9, 9 ], 
-           [ 9, 8, 7, 8, 9 ], 
+ #          [ 9, 8, 7, 8, 9 ], 
            [ 7, 6, 5, 6, 7 ],
            [ 5, 4, 3, 4, 5 ],
-           [ 4, 3, 2, 3, 4 ],
+ #          [ 4, 3, 2, 3, 4 ],
            [ 3, 2, 1, 2, 3 ],
-           [ 2, 1, 0, 1, 2 ],
+ #          [ 2, 1, 0, 1, 2 ],
            [ 1, 0, 0, 0, 1 ] ]
     for l in l1:
         draw( [ l,
